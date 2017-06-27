@@ -1,0 +1,119 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>新华日报搜索工具</title>
+		<style>
+			#main-container{
+				position:fixed;
+				left:50%;
+				top:50%;
+				width:500px;
+				height:300px;
+				margin-left:-250px;
+				margin-top: -150px;
+				font-family: '微软雅黑';
+			}	
+			.center-row{
+				width:100%;
+				text-align:center;
+				padding:0 20px;
+			}		
+			#logo{
+				font-size:40px;
+				margin: 20px 0 ;
+			}
+			#keyword-in{
+				width:360px;
+				height:30px;
+				padding:2px 5px;
+				font-size:18px;
+				float:left;
+			}
+			#submit{
+				width:120px;
+				height:30px;
+				padding:0 5px;
+				font-size:16px;
+				line-height:30px;
+				color:white;
+				background-color: #3385ff;
+				float:left;
+				border: 0;
+			}
+			#recomend{
+				width:100%;
+				display: none;
+				float:left;
+				list-style:none;
+				font-size:18px;
+				padding:0;
+				margin:0;
+			}
+			.list-item{
+				width:360px;
+				float:left;
+				cursor:pointer;
+			}
+			.left{
+				float:left;
+				padding-left:2px 5px;
+			}
+			.right{
+				float:right;
+				padding-left:2px 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="main-container">
+			<div id="logo" class="center-row">
+				新华日报搜索工具
+			</div>
+			<div class="center-row">
+				<form id="search-form" action="search">
+					<div style="float:left">
+						<input id="keyword-in" name="keyword" type="text" placeholder="输入搜索关键字">
+						<input id="submit" type="submit" value="搜索">
+					</div>
+					<ul id="recomend">
+					</ul>
+				</form>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('#recomend').on('click','.list-item',function(){
+				$('#keyword-in').val($(this).children('span:first').text());
+				$('#recomend').hide();
+			});
+			function showKeyword(){
+				$.post('http://localhost:8080/demo/search',{p:'listkeyword'},function(res){
+					var resObj = JSON.parse(res);
+					$('#recomend').html('');
+					for(var i in resObj){
+						var li = $('<li class="list-item"></li>');
+						var termSpan = $('<span class="left"></span>');
+						termSpan.text(i)
+						var countSpan = $('<span class="right"></span>');
+						countSpan.text(resObj[i]);
+						li.append(termSpan);
+						li.append(countSpan);
+						$('#recomend').append(li);
+						$('#recomend').show();
+					}
+				})
+			}
+			
+			var keywordInput = document.getElementById('keyword-in');
+			keywordInput.onfocus = function(){
+				if(keywordInput.value == ''){
+					showKeyword();
+				}
+			}
+		});
+			
+		
+	</script>
+</html>
