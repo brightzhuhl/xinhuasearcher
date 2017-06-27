@@ -27,7 +27,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.BytesRef;
 
-import coderz.demo.search.SearchUtil.CompareableTerm;
+import coderz.demo.search.standard.AbstractSearcher.CompareableTerm;
 import coderz.demo.util.PropertiesUtil;
 import coderz.demo.util.ScheduleExcutor;
 

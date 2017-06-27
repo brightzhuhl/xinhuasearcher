@@ -20,6 +20,7 @@ import coderz.demo.Constant;
 import coderz.demo.crawler.entity.Article;
 import coderz.demo.crawler.entity.ArticleSummary;
 import coderz.demo.search.IndexResolver;
+import coderz.demo.util.PropertiesUtil;
 import coderz.demo.util.sql.Dao;
 
 public class IKIndexResolver extends IndexResolver{
@@ -34,7 +35,8 @@ public class IKIndexResolver extends IndexResolver{
 	@Override
 	protected IndexWriter customIndexWriter() {
 		try {
-			Directory directory = FSDirectory.open(Paths.get(Constant.LUCENE_INDEX_PATH));
+			String path = PropertiesUtil.getStringValue(Constant.LUCENE_INDEX_PATH);
+			Directory directory = FSDirectory.open(Paths.get(path));
 			Analyzer analyzer = new Lucene6IKAnalyzer();
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			return new IndexWriter(directory, config);

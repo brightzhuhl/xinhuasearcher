@@ -26,11 +26,16 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Attribute;
 import org.apache.lucene.util.AttributeReflector;
 
+import coderz.demo.search.Searcher;
+import coderz.demo.search.standard.AbstractSearcher;
+
 public class LuceneTest {
 	final static String dataFilePath = "D:\\lucenedata\\source\\test.txt";
 	final static String indexDirPath = "D:\\lucenedata\\index";
 	public static void main(String[] args){
-		
+		Constant.init();
+		Searcher searcher = AbstractSearcher.createDefault();
+		System.out.println(searcher.searchWithMustContainPolicy("中国农业"));
 	}
 	public static void analyse(String str){
 		 Tokenizer tokenizer = new HMMChineseTokenizer();

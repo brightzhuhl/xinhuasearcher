@@ -13,7 +13,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
 
-import coderz.demo.search.SearchUtil;
+import coderz.demo.search.Searcher;
+import coderz.demo.search.standard.AbstractSearcher;
 
 @WebServlet(name="searchServlet",urlPatterns="/search")
 public class SearchServlet extends HttpServlet{
@@ -21,6 +22,9 @@ public class SearchServlet extends HttpServlet{
 	 * 
 	 */
 	private static final long serialVersionUID = 122543407582568053L;
+	
+	private Searcher defaultSearcher = AbstractSearcher.createDefault(),
+						ikSearcher = AbstractSearcher.createIkSearcher();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -33,16 +37,16 @@ public class SearchServlet extends HttpServlet{
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		if("listkeyword".equals(req.getParameter("p"))){
-			getKeyword(res);
+			getKeyword(req,res);
 		}
 	}
 	
-	public void getKeyword(HttpServletResponse res){
+	public void getKeyword(HttpServletRequest req,HttpServletResponse res){
 		res.setCharacterEncoding("utf-8");
 		OutputStream out = null;
 		try {
 			out = res.getOutputStream();
-			out.write(SearchUtil.getKeyword(10).toJSONString().getBytes());
+			out.write(defaultSearcher.getKeyword(10).toJSONString().getBytes());
 			out.flush();
 			out.close();
 		} catch (IOException e) {
@@ -51,7 +55,22 @@ public class SearchServlet extends HttpServlet{
 	}
 	
 	public void listSearchResult(String keyword,HttpServletRequest req,HttpServletResponse res){
-		JSONArray result = SearchUtil.searchKeyWord(keyword);
+		
+		String analyzer = req.getParameter("analyzer");
+		String type = req.getParameter("type");
+		Searcher searcher = null;
+		JSONArray result = null;
+		if(StringUtils.isEmpty(analyzer)){
+			searcher = defaultSearcher;
+		}else if("ik".equals(analyzer)){
+			searcher = ikSearcher;
+		}
+		if(StringUtils.isEmpty(type)){
+			result = searcher.searchWithDefaultPolicy(keyword);
+		}else if("must".equals(type)){
+			result = searcher.searchWithMustContainPolicy(keyword);
+		}
+		
 		try {
 			req.setAttribute("result", result);
 			req.getRequestDispatcher("/result.jsp").forward(req, res);
